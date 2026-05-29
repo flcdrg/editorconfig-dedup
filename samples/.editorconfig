@@ -805,6 +805,33 @@ dotnet_naming_symbols.private_static_readonly_symbols.required_modifiers = reado
 dotnet_naming_symbols.private_static_readonly_symbols.resharper_applicable_kinds = readonly_field
 dotnet_naming_symbols.private_static_readonly_symbols.resharper_required_modifiers = static
 
+# ReSharper properties
+resharper_braces_for_for = required
+resharper_braces_for_foreach = required
+resharper_braces_for_ifelse = required
+resharper_braces_for_while = required
+resharper_braces_redundant = false
+resharper_case_block_braces = next_line_shifted_2
+resharper_csharp_wrap_parameters_style = chop_if_long
+resharper_keep_existing_declaration_block_arrangement = true
+resharper_keep_existing_embedded_block_arrangement = true
+resharper_keep_existing_enum_arrangement = true
+resharper_keep_existing_initializer_arrangement = false
+resharper_show_autodetect_configure_formatting_tip = false
+resharper_use_heuristics_for_body_style = false
+resharper_use_indent_from_vs = false
+
+# ReSharper inspection severities
+resharper_arrange_accessor_owner_body_highlighting = none
+resharper_arrange_namespace_body_highlighting = suggestion
+resharper_arrange_this_qualifier_highlighting = none
+resharper_arrange_type_member_modifiers_highlighting = none
+resharper_arrange_type_modifiers_highlighting = none
+resharper_built_in_type_reference_style_for_member_access_highlighting = none
+resharper_built_in_type_reference_style_highlighting = none
+resharper_inconsistent_naming_highlighting = suggestion
+resharper_redundant_base_qualifier_highlighting = none
+
 [*.{appxmanifest,asax,ascx,aspx,axaml,axml,config,cql,cs,cshtml,csproj,dbml,discomap,dtd,htm,html,jsproj,lsproj,master,njsproj,nuspec,paml,proj,props,razor,resw,resx,skin,sql,StyleCop,targets,tasks,vb,vbproj,xaml,xamlx,xml,xoml,xsd}]
 indent_style = space
 indent_size = 4

@@ -1,3 +1,8 @@
+using System.CommandLine;
+using System.CommandLine.Parsing;
+
+using dotnet_editorconfig_dedup;
+
 var rootOption = new Option<string?>("--root", "-r");
 var whatIfOption = new Option<bool>("--what-if", "-w");
 
