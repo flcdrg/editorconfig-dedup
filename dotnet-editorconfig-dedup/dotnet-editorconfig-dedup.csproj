@@ -6,6 +6,9 @@
     <RootNamespace>dotnet_editorconfig_dedup</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>dotnet-editorconfig-dedup</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
 
 </Project>
