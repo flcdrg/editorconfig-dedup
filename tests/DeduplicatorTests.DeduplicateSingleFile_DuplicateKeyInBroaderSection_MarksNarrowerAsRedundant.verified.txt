@@ -1,0 +1,5 @@
+﻿{
+  BroaderSectionPropertyIsRedundant: false,
+  NarrowerSectionPropertyIsRedundant: true,
+  TotalLinesRemoved: 1
+}

@@ -91,6 +91,45 @@ public class Deduplicator
                 }
             }
         }
+
+        DeduplicateCrossSectionsWithinFile(file);
+    }
+
+    private void DeduplicateCrossSectionsWithinFile(EditorConfigFile file)
+    {
+        List<EditorConfigSection> sections = file.Sections;
+
+        for (int i = 0; i < sections.Count; i++)
+        {
+            for (int j = 0; j < sections.Count; j++)
+            {
+                if (i == j)
+                    continue;
+
+                EditorConfigSection broaderSection = sections[i];
+                EditorConfigSection narrowerSection = sections[j];
+
+                if (!PatternMatcher.IsScopeBroader(broaderSection.Pattern, narrowerSection.Pattern))
+                    continue;
+
+                foreach (var narrowerProp in narrowerSection.Properties)
+                {
+                    if (narrowerProp.IsRedundant)
+                        continue;
+
+                    var matchingBroaderProp = broaderSection.Properties.FirstOrDefault(p =>
+                        string.Equals(p.Key, narrowerProp.Key, StringComparison.OrdinalIgnoreCase) &&
+                        !p.IsRedundant);
+
+                    if (matchingBroaderProp != null && matchingBroaderProp.Value == narrowerProp.Value)
+                    {
+                        narrowerProp.IsRedundant = true;
+                        Summary.AddDuplicate(file.FilePath, narrowerSection.Pattern, narrowerProp.Key, narrowerProp.Value);
+                        Summary.TotalLinesRemoved++;
+                    }
+                }
+            }
+        }
     }
 
     private void DeduplicateAcrossFiles(EditorConfigFile childFile, EditorConfigFile parentFile)

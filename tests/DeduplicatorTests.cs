@@ -124,6 +124,41 @@ public class DeduplicatorTests
     }
 
     [Fact]
+    public async Task DeduplicateSingleFile_DuplicateKeyInBroaderSection_MarksNarrowerAsRedundant()
+    {
+        string tempFile = Path.GetTempFileName().Replace(".tmp", ".editorconfig");
+        try
+        {
+            File.WriteAllText(tempFile, """
+                [*]
+                indent_style = space
+
+                [*.cs]
+                indent_style = space
+                """);
+
+            var file = EditorConfigFile.Parse(tempFile);
+            var deduplicator = new Deduplicator();
+
+            deduplicator.AnalyzeHierarchy(new List<EditorConfigFile> { file });
+
+            var broaderProp = file.Sections[0].Properties[0];
+            var narrowerProp = file.Sections[1].Properties[0];
+
+            await Verifier.Verify(new
+            {
+                BroaderSectionPropertyIsRedundant = broaderProp.IsRedundant,
+                NarrowerSectionPropertyIsRedundant = narrowerProp.IsRedundant,
+                TotalLinesRemoved = deduplicator.Summary.TotalLinesRemoved
+            });
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
+    }
+
+    [Fact]
     public void FindAllEditorConfigFiles_RecursiveSearch_FindsAllFiles()
     {
         string tempDir = Path.Combine(Path.GetTempPath(), $"test_{Guid.NewGuid()}");
