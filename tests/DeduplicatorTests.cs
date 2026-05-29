@@ -5,7 +5,7 @@ using dotnet_editorconfig_dedup;
 public class DeduplicatorTests
 {
     [Fact]
-    public void DeduplicateSingleFile_DuplicateKeysInSameSection_MarkFirstAsRedundant()
+    public async Task DeduplicateSingleFile_DuplicateKeysInSameSection_MarkFirstAsRedundant()
     {
         string tempFile = Path.GetTempFileName().Replace(".tmp", ".editorconfig");
         try
@@ -23,9 +23,13 @@ public class DeduplicatorTests
 
             var section = file.Sections[0];
             var properties = section.Properties.OrderBy(p => p.LineNumber).ToList();
-            Assert.True(properties[0].IsRedundant);
-            Assert.False(properties[1].IsRedundant);
-            Assert.Equal(1, deduplicator.Summary.TotalLinesRemoved);
+            
+            await Verifier.Verify(new
+            {
+                FirstPropertyIsRedundant = properties[0].IsRedundant,
+                SecondPropertyIsRedundant = properties[1].IsRedundant,
+                TotalLinesRemoved = deduplicator.Summary.TotalLinesRemoved
+            });
         }
         finally
         {
@@ -34,7 +38,7 @@ public class DeduplicatorTests
     }
 
     [Fact]
-    public void DeduplicateHierarchy_BroaderPatternInParent_MarksChildAsRedundant()
+    public async Task DeduplicateHierarchy_BroaderPatternInParent_MarksChildAsRedundant()
     {
         string tempDir = Path.Combine(Path.GetTempPath(), $"test_{Guid.NewGuid()}");
         try
@@ -62,8 +66,12 @@ public class DeduplicatorTests
             deduplicator.AnalyzeHierarchy(new List<EditorConfigFile> { parent, child });
 
             var childProps = child.Sections[0].Properties.ToList();
-            Assert.True(childProps[0].IsRedundant);
-            Assert.Equal(1, deduplicator.Summary.TotalLinesRemoved);
+            
+            await Verify(new
+            {
+                ChildPropertyIsRedundant = childProps[0].IsRedundant,
+                TotalLinesRemoved = deduplicator.Summary.TotalLinesRemoved
+            });
         }
         finally
         {
@@ -73,7 +81,7 @@ public class DeduplicatorTests
     }
 
     [Fact]
-    public void DeduplicateHierarchy_MoreSpecificPatternInChild_NotMarkedAsRedundant()
+    public async Task DeduplicateHierarchy_MoreSpecificPatternInChild_NotMarkedAsRedundant()
     {
         string tempDir = Path.Combine(Path.GetTempPath(), $"test_{Guid.NewGuid()}");
         try
@@ -101,8 +109,12 @@ public class DeduplicatorTests
             deduplicator.AnalyzeHierarchy(new List<EditorConfigFile> { parent, child });
 
             var childProps = child.Sections[0].Properties.ToList();
-            Assert.False(childProps[0].IsRedundant);
-            Assert.Equal(0, deduplicator.Summary.TotalLinesRemoved);
+            
+            await Verify(new
+            {
+                ChildPropertyIsRedundant = childProps[0].IsRedundant,
+                TotalLinesRemoved = deduplicator.Summary.TotalLinesRemoved
+            });
         }
         finally
         {

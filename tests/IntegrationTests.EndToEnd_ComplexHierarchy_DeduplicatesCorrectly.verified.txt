@@ -1,0 +1,8 @@
+﻿{
+  TotalFilesFound: 2,
+  TotalLinesRemoved: 1,
+  ChildFileFound: true,
+  SectionFound: true,
+  PropertyFound: true,
+  PropertyIsRedundant: true
+}

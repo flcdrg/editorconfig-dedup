@@ -1,0 +1,6 @@
+﻿{
+  SectionCount: 1,
+  PropertyCount: 2,
+  FirstPropertyValue: tab,
+  SecondPropertyValue: space
+}

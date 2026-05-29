@@ -1,0 +1,5 @@
+﻿{
+  FirstPropertyIsRedundant: true,
+  SecondPropertyIsRedundant: false,
+  TotalLinesRemoved: 1
+}

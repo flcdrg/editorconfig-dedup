@@ -1,0 +1,9 @@
+﻿{
+  ContainsHeader: true,
+  ContainsFilePath: true,
+  ContainsFirstPattern: true,
+  ContainsSecondPattern: true,
+  ContainsFirstProperty: true,
+  ContainsSecondProperty: true,
+  ContainsTotal: true
+}

@@ -5,7 +5,7 @@ using dotnet_editorconfig_dedup;
 public class EditorConfigParserTests
 {
     [Fact]
-    public void Parse_SimpleEditorConfig_ParsesCorrectly()
+    public async Task Parse_SimpleEditorConfig_ParsesCorrectly()
     {
         string tempFile = Path.GetTempFileName().Replace(".tmp", ".editorconfig");
         try
@@ -22,10 +22,13 @@ public class EditorConfigParserTests
 
             var file = EditorConfigFile.Parse(tempFile);
 
-            Assert.True(file.IsRoot);
-            Assert.Equal(2, file.Sections.Count);
-            Assert.Equal("[*]", file.Sections[0].Pattern);
-            Assert.Equal("[*.cs]", file.Sections[1].Pattern);
+            await Verifier.Verify(new
+            {
+                IsRoot = file.IsRoot,
+                SectionCount = file.Sections.Count,
+                FirstPattern = file.Sections[0].Pattern,
+                SecondPattern = file.Sections[1].Pattern
+            });
         }
         finally
         {
@@ -34,7 +37,7 @@ public class EditorConfigParserTests
     }
 
     [Fact]
-    public void Parse_WithComments_IgnoresComments()
+    public async Task Parse_WithComments_IgnoresComments()
     {
         string tempFile = Path.GetTempFileName().Replace(".tmp", ".editorconfig");
         try
@@ -50,9 +53,12 @@ public class EditorConfigParserTests
 
             var file = EditorConfigFile.Parse(tempFile);
 
-            Assert.True(file.IsRoot);
-            Assert.Single(file.Sections);
-            Assert.Single(file.Sections[0].Properties);
+            await Verifier.Verify(new
+            {
+                IsRoot = file.IsRoot,
+                SectionCount = file.Sections.Count,
+                PropertyCount = file.Sections[0].Properties.Count
+            });
         }
         finally
         {
@@ -61,7 +67,7 @@ public class EditorConfigParserTests
     }
 
     [Fact]
-    public void Parse_WithDuplicateKeys_BothAreStored()
+    public async Task Parse_WithDuplicateKeys_BothAreStored()
     {
         string tempFile = Path.GetTempFileName().Replace(".tmp", ".editorconfig");
         try
@@ -74,10 +80,13 @@ public class EditorConfigParserTests
 
             var file = EditorConfigFile.Parse(tempFile);
 
-            Assert.Single(file.Sections);
-            Assert.Equal(2, file.Sections[0].Properties.Count);
-            Assert.Equal("tab", file.Sections[0].Properties[0].Value);
-            Assert.Equal("space", file.Sections[0].Properties[1].Value);
+            await Verifier.Verify(new
+            {
+                SectionCount = file.Sections.Count,
+                PropertyCount = file.Sections[0].Properties.Count,
+                FirstPropertyValue = file.Sections[0].Properties[0].Value,
+                SecondPropertyValue = file.Sections[0].Properties[1].Value
+            });
         }
         finally
         {
@@ -86,7 +95,7 @@ public class EditorConfigParserTests
     }
 
     [Fact]
-    public void Parse_MultiplePatterns_ParsesAllSections()
+    public async Task Parse_MultiplePatterns_ParsesAllSections()
     {
         string tempFile = Path.GetTempFileName().Replace(".tmp", ".editorconfig");
         try
@@ -104,10 +113,13 @@ public class EditorConfigParserTests
 
             var file = EditorConfigFile.Parse(tempFile);
 
-            Assert.Equal(3, file.Sections.Count);
-            Assert.Equal("[*]", file.Sections[0].Pattern);
-            Assert.Equal("[*.cs]", file.Sections[1].Pattern);
-            Assert.Equal("[*.{js,ts}]", file.Sections[2].Pattern);
+            await Verifier.Verify(new
+            {
+                SectionCount = file.Sections.Count,
+                FirstPattern = file.Sections[0].Pattern,
+                SecondPattern = file.Sections[1].Pattern,
+                ThirdPattern = file.Sections[2].Pattern
+            });
         }
         finally
         {

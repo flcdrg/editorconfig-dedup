@@ -5,7 +5,7 @@ using dotnet_editorconfig_dedup;
 public class IntegrationTests
 {
     [Fact]
-    public void EndToEnd_WhatIfMode_DoesNotModifyFiles()
+    public async Task EndToEnd_WhatIfMode_DoesNotModifyFiles()
     {
         string tempDir = Path.Combine(Path.GetTempPath(), $"test_{Guid.NewGuid()}");
         try
@@ -25,8 +25,12 @@ public class IntegrationTests
             deduplicator.AnalyzeHierarchy(files);
 
             string currentContent = File.ReadAllText(editorConfig);
-            Assert.Equal(originalContent, currentContent);
-            Assert.Equal(1, deduplicator.Summary.TotalLinesRemoved);
+            
+            await Verifier.Verify(new
+            {
+                FileUnmodified = originalContent == currentContent,
+                TotalLinesRemoved = deduplicator.Summary.TotalLinesRemoved
+            });
         }
         finally
         {
@@ -36,7 +40,7 @@ public class IntegrationTests
     }
 
     [Fact]
-    public void EndToEnd_ModifyMode_RemovesDuplicateLines()
+    public async Task EndToEnd_ModifyMode_RemovesDuplicateLines()
     {
         string tempDir = Path.Combine(Path.GetTempPath(), $"test_{Guid.NewGuid()}");
         try
@@ -55,8 +59,6 @@ public class IntegrationTests
             var deduplicator = new Deduplicator();
             deduplicator.AnalyzeHierarchy(files);
 
-            Assert.Equal(1, deduplicator.Summary.TotalLinesRemoved);
-
             foreach (var file in files)
             {
                 string tempPath = file.FilePath + ".tmp";
@@ -66,9 +68,14 @@ public class IntegrationTests
             }
 
             string modifiedContent = File.ReadAllText(editorConfig);
-            Assert.DoesNotContain("indent_style = space", modifiedContent);
-            Assert.Contains("indent_style = tab", modifiedContent);
-            Assert.Contains("indent_size = 4", modifiedContent);
+            
+            await Verifier.Verify(new
+            {
+                TotalLinesRemoved = deduplicator.Summary.TotalLinesRemoved,
+                RemovedFirstIndentStyle = !modifiedContent.Contains("indent_style = space"),
+                ContainsSecondIndentStyle = modifiedContent.Contains("indent_style = tab"),
+                ContainsIndentSize = modifiedContent.Contains("indent_size = 4")
+            });
         }
         finally
         {
@@ -78,7 +85,7 @@ public class IntegrationTests
     }
 
     [Fact]
-    public void EndToEnd_ComplexHierarchy_DeduplicatesCorrectly()
+    public async Task EndToEnd_ComplexHierarchy_DeduplicatesCorrectly()
     {
         string tempDir = Path.Combine(Path.GetTempPath(), $"test_{Guid.NewGuid()}");
         try
@@ -107,20 +114,22 @@ public class IntegrationTests
                 """);
 
             var files = Deduplicator.FindAllEditorConfigFiles(tempDir);
-            Assert.Equal(2, files.Count);
-
             var deduplicator = new Deduplicator();
             deduplicator.AnalyzeHierarchy(files);
 
-            Assert.Equal(1, deduplicator.Summary.TotalLinesRemoved);
-
             var childFile = files.FirstOrDefault(f => f.FilePath.Contains("src"));
-            Assert.NotNull(childFile);
-            var section = childFile!.Sections.FirstOrDefault(s => s.Pattern == "[*]");
-            Assert.NotNull(section);
-            var indentProp = section!.Properties.FirstOrDefault(p => p.Key == "indent_style");
-            Assert.NotNull(indentProp);
-            Assert.True(indentProp!.IsRedundant);
+            var section = childFile?.Sections.FirstOrDefault(s => s.Pattern == "[*]");
+            var indentProp = section?.Properties.FirstOrDefault(p => p.Key == "indent_style");
+            
+            await Verifier.Verify(new
+            {
+                TotalFilesFound = files.Count,
+                TotalLinesRemoved = deduplicator.Summary.TotalLinesRemoved,
+                ChildFileFound = childFile != null,
+                SectionFound = section != null,
+                PropertyFound = indentProp != null,
+                PropertyIsRedundant = indentProp?.IsRedundant ?? false
+            });
         }
         finally
         {
@@ -130,7 +139,7 @@ public class IntegrationTests
     }
 
     [Fact]
-    public void SummaryGeneration_ProducesSummaryReport()
+    public async Task SummaryGeneration_ProducesSummaryReport()
     {
         var summary = new DeduplicationSummary();
         summary.AddDuplicate("/path/.editorconfig", "[*]", "indent_style", "space");
@@ -139,13 +148,16 @@ public class IntegrationTests
 
         string report = summary.GenerateReport();
 
-        Assert.Contains("Deduplication Summary:", report);
-        Assert.Contains("/path/.editorconfig", report);
-        Assert.Contains("[*]", report);
-        Assert.Contains("[*.cs]", report);
-        Assert.Contains("indent_style = space", report);
-        Assert.Contains("charset = utf-8", report);
-        Assert.Contains("Total duplicates found: 2", report);
+        await Verifier.Verify(new
+        {
+            ContainsHeader = report.Contains("Deduplication Summary:"),
+            ContainsFilePath = report.Contains("/path/.editorconfig"),
+            ContainsFirstPattern = report.Contains("[*]"),
+            ContainsSecondPattern = report.Contains("[*.cs]"),
+            ContainsFirstProperty = report.Contains("indent_style = space"),
+            ContainsSecondProperty = report.Contains("charset = utf-8"),
+            ContainsTotal = report.Contains("Total duplicates found: 2")
+        });
     }
 
     [Fact]

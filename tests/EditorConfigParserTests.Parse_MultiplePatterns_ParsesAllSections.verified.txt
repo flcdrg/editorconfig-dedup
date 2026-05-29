@@ -1,0 +1,6 @@
+﻿{
+  SectionCount: 3,
+  FirstPattern: [*],
+  SecondPattern: [*.cs],
+  ThirdPattern: [*.{js,ts}]
+}

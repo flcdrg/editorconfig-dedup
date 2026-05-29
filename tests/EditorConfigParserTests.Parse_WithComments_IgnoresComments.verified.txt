@@ -1,0 +1,5 @@
+﻿{
+  IsRoot: true,
+  SectionCount: 1,
+  PropertyCount: 1
+}

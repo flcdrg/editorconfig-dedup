@@ -1,22 +1,22 @@
 ﻿using dotnet_editorconfig_dedup;
 
-string rootPath = ".";
-bool whatIf = false;
+var rootPath = ".";
+var whatIf = false;
 
 for (int i = 0; i < args.Length; i++)
 {
-    switch (args[i])
+    if (args[i] is "-r" or "--root" && i + 1 < args.Length)
     {
-        case "-r" or "--root":
-            if (i + 1 < args.Length)
-                rootPath = args[++i];
-            break;
-        case "-w" or "--what-if":
-            whatIf = true;
-            break;
-        case "-h" or "--help":
-            PrintHelp();
-            return 0;
+        rootPath = args[++i];
+    }
+    else if (args[i] is "-w" or "--what-if")
+    {
+        whatIf = true;
+    }
+    else if (args[i] is "-h" or "--help")
+    {
+        PrintHelp();
+        return 0;
     }
 }
 

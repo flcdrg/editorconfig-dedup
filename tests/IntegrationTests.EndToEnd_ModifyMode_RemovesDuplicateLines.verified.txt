@@ -1,0 +1,6 @@
+﻿{
+  TotalLinesRemoved: 1,
+  RemovedFirstIndentStyle: true,
+  ContainsSecondIndentStyle: true,
+  ContainsIndentSize: true
+}

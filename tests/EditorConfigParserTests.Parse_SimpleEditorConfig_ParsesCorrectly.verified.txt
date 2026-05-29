@@ -1,0 +1,6 @@
+﻿{
+  IsRoot: true,
+  SectionCount: 2,
+  FirstPattern: [*],
+  SecondPattern: [*.cs]
+}
