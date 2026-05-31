@@ -9,10 +9,19 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>dotnet-editorconfig-dedup</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Copyright>Copyright (c) 2026 David Gardiner</Copyright>
+    <Authors>David Gardiner</Authors>
+    <PackageTags>editorconfig;deduplication;tool</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.CommandLine" Version="2.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>
