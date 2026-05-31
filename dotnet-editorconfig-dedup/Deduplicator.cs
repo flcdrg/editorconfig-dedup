@@ -37,27 +37,28 @@ public class Deduplicator
             DeduplicateSingleFile(file);
         }
 
-        var filesByDirectory = files.GroupBy(f => Path.GetDirectoryName(f.FilePath))
-                                     .OrderBy(g => g.Key?.Length ?? 0)
-                                     .ToList();
-
         foreach (var childFile in files)
         {
-            var childDir = Path.GetDirectoryName(childFile.FilePath);
+            string? childDir = Path.GetDirectoryName(childFile.FilePath);
             if (string.IsNullOrEmpty(childDir))
                 continue;
 
-            var parentFiles = files.Where(f =>
-            {
-                var parentDir = Path.GetDirectoryName(f.FilePath);
-                return !string.IsNullOrEmpty(parentDir) &&
-                       parentDir != childDir &&
-                       IsParentOf(parentDir, childDir);
-            }).ToList();
+            List<EditorConfigFile> parentFiles = files
+                .Where(f =>
+                {
+                    string? parentDir = Path.GetDirectoryName(f.FilePath);
+                    return !string.IsNullOrEmpty(parentDir) &&
+                           parentDir != childDir &&
+                           IsParentOf(parentDir, childDir);
+                })
+                .OrderByDescending(f => Path.GetDirectoryName(f.FilePath)!.Length)
+                .ToList();
 
-            foreach (var parentFile in parentFiles)
+            foreach (EditorConfigFile parentFile in parentFiles)
             {
                 DeduplicateAcrossFiles(childFile, parentFile);
+                if (parentFile.IsRoot)
+                    break;
             }
         }
     }
@@ -150,8 +151,9 @@ public class Deduplicator
                     if (childProp.IsRedundant)
                         continue;
 
-                    var matchingParentProp = parentSection.Properties.FirstOrDefault(p =>
-                        string.Equals(p.Key, childProp.Key, StringComparison.OrdinalIgnoreCase));
+                    var matchingParentProp = parentSection.Properties.LastOrDefault(p =>
+                        string.Equals(p.Key, childProp.Key, StringComparison.OrdinalIgnoreCase) &&
+                        !p.IsRedundant);
 
                     if (matchingParentProp != null && matchingParentProp.Value == childProp.Value)
                     {

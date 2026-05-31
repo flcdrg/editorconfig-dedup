@@ -69,28 +69,21 @@ public class EditorConfigFile
 
     public void WriteToFile(string outputPath)
     {
-        using StreamWriter writer = new(outputPath);
-        foreach (string line in RawLines)
+        HashSet<int> redundantLineNumbers = new();
+        foreach (EditorConfigSection section in Sections)
         {
-            bool shouldWrite = true;
-
-            foreach (EditorConfigSection section in Sections)
+            foreach (PropertyDefinition prop in section.Properties)
             {
-                foreach (PropertyDefinition prop in section.Properties)
-                {
-                    if (prop.IsRedundant && prop.LineNumber <= RawLines.Count && 
-                        RawLines[prop.LineNumber - 1] == line)
-                    {
-                        shouldWrite = false;
-                        break;
-                    }
-                }
-                if (!shouldWrite)
-                    break;
+                if (prop.IsRedundant)
+                    redundantLineNumbers.Add(prop.LineNumber);
             }
+        }
 
-            if (shouldWrite)
-                writer.WriteLine(line);
+        using StreamWriter writer = new(outputPath);
+        for (int i = 0; i < RawLines.Count; i++)
+        {
+            if (!redundantLineNumbers.Contains(i + 1))
+                writer.WriteLine(RawLines[i]);
         }
     }
 

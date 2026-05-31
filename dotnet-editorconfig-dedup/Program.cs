@@ -50,8 +50,7 @@ rootCommand.SetAction(parseResult =>
             {
                 string tempPath = file.FilePath + ".tmp";
                 file.WriteToFile(tempPath);
-                File.Delete(file.FilePath);
-                File.Move(tempPath, file.FilePath);
+                File.Move(tempPath, file.FilePath, overwrite: true);
             }
 
             Console.WriteLine($"✓ Removed {deduplicator.Summary.TotalLinesRemoved} duplicate line(s)");
