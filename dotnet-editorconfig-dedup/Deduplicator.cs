@@ -1,22 +1,34 @@
+using System.IO.Abstractions;
+
 namespace dotnet_editorconfig_dedup;
 
 public class Deduplicator
 {
+    private readonly IFileSystem _fileSystem;
+
+    public Deduplicator(IFileSystem? fileSystem = null)
+    {
+        _fileSystem = fileSystem ?? new FileSystem();
+    }
+
     public DeduplicationSummary Summary { get; private set; } = new();
 
-    public static List<EditorConfigFile> FindAllEditorConfigFiles(string rootPath)
+    public static List<EditorConfigFile> FindAllEditorConfigFiles(string rootPath, IFileSystem? fileSystem = null)
     {
+        IFileSystem resolvedFileSystem = fileSystem ?? new FileSystem();
         var files = new List<EditorConfigFile>();
-        var searchPath = Path.IsPathRooted(rootPath) ? rootPath : Path.Combine(Directory.GetCurrentDirectory(), rootPath);
+        var searchPath = resolvedFileSystem.Path.IsPathRooted(rootPath)
+            ? rootPath
+            : resolvedFileSystem.Path.Combine(resolvedFileSystem.Directory.GetCurrentDirectory(), rootPath);
 
-        if (!Directory.Exists(searchPath))
+        if (!resolvedFileSystem.Directory.Exists(searchPath))
             throw new DirectoryNotFoundException($"Directory not found: {searchPath}");
 
-        foreach (string filePath in Directory.EnumerateFiles(searchPath, ".editorconfig", SearchOption.AllDirectories))
+        foreach (string filePath in resolvedFileSystem.Directory.EnumerateFiles(searchPath, ".editorconfig", SearchOption.AllDirectories))
         {
             try
             {
-                files.Add(EditorConfigFile.Parse(filePath));
+                files.Add(EditorConfigFile.Parse(filePath, resolvedFileSystem));
             }
             catch (Exception ex)
             {
@@ -39,19 +51,19 @@ public class Deduplicator
 
         foreach (var childFile in files)
         {
-            string? childDir = Path.GetDirectoryName(childFile.FilePath);
+            string? childDir = _fileSystem.Path.GetDirectoryName(childFile.FilePath);
             if (string.IsNullOrEmpty(childDir))
                 continue;
 
             List<EditorConfigFile> parentFiles = files
                 .Where(f =>
                 {
-                    string? parentDir = Path.GetDirectoryName(f.FilePath);
+                    string? parentDir = _fileSystem.Path.GetDirectoryName(f.FilePath);
                     return !string.IsNullOrEmpty(parentDir) &&
                            parentDir != childDir &&
                            IsParentOf(parentDir, childDir);
                 })
-                .OrderByDescending(f => Path.GetDirectoryName(f.FilePath)!.Length)
+                .OrderByDescending(f => _fileSystem.Path.GetDirectoryName(f.FilePath)!.Length)
                 .ToList();
 
             foreach (EditorConfigFile parentFile in parentFiles)
@@ -167,14 +179,14 @@ public class Deduplicator
         }
     }
 
-    private static bool IsParentOf(string? potentialParent, string? child)
+    private bool IsParentOf(string? potentialParent, string? child)
     {
         if (string.IsNullOrEmpty(potentialParent) || string.IsNullOrEmpty(child))
             return false;
 
-        string normalizedParent = Path.GetFullPath(potentialParent);
-        string normalizedChild = Path.GetFullPath(child);
+        string normalizedParent = _fileSystem.Path.GetFullPath(potentialParent);
+        string normalizedChild = _fileSystem.Path.GetFullPath(child);
 
-        return normalizedChild.StartsWith(normalizedParent + Path.DirectorySeparatorChar);
+        return normalizedChild.StartsWith(normalizedParent + _fileSystem.Path.DirectorySeparatorChar);
     }
 }

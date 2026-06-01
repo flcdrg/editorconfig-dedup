@@ -1,14 +1,19 @@
+using System.IO.Abstractions;
+
 namespace dotnet_editorconfig_dedup;
 
 public class EditorConfigFile
 {
+    private readonly IFileSystem _fileSystem;
+
     public string FilePath { get; set; }
     public List<EditorConfigSection> Sections { get; private set; }
     public List<string> RawLines { get; private set; }
     public bool IsRoot { get; set; }
 
-    public EditorConfigFile(string filePath)
+    public EditorConfigFile(string filePath, IFileSystem? fileSystem = null)
     {
+        _fileSystem = fileSystem ?? new FileSystem();
         FilePath = filePath;
         Sections = new List<EditorConfigSection>();
         RawLines = new List<string>();
@@ -20,13 +25,14 @@ public class EditorConfigFile
         Sections.Add(section);
     }
 
-    public static EditorConfigFile Parse(string filePath)
+    public static EditorConfigFile Parse(string filePath, IFileSystem? fileSystem = null)
     {
-        if (!File.Exists(filePath))
+        IFileSystem resolvedFileSystem = fileSystem ?? new FileSystem();
+        if (!resolvedFileSystem.File.Exists(filePath))
             throw new FileNotFoundException($"File not found: {filePath}");
 
-        EditorConfigFile file = new(filePath);
-        string[] lines = File.ReadAllLines(filePath);
+        EditorConfigFile file = new(filePath, resolvedFileSystem);
+        string[] lines = resolvedFileSystem.File.ReadAllLines(filePath);
         file.RawLines.AddRange(lines);
 
         EditorConfigSection? currentSection = null;
@@ -79,13 +85,9 @@ public class EditorConfigFile
             }
         }
 
-        using StreamWriter writer = new(outputPath);
-        for (int i = 0; i < RawLines.Count; i++)
-        {
-            if (!redundantLineNumbers.Contains(i + 1))
-                writer.WriteLine(RawLines[i]);
-        }
+        IEnumerable<string> outputLines = RawLines.Where((line, index) => !redundantLineNumbers.Contains(index + 1));
+        _fileSystem.File.WriteAllLines(outputPath, outputLines);
     }
 
-    public override string ToString() => $"{Path.GetFileName(FilePath)} with {Sections.Count} sections";
+    public override string ToString() => $"{_fileSystem.Path.GetFileName(FilePath)} with {Sections.Count} sections";
 }
