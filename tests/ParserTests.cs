@@ -1,130 +1,107 @@
 namespace tests;
 
 using dotnet_editorconfig_dedup;
+using System.IO.Abstractions.TestingHelpers;
 
 public class EditorConfigParserTests
 {
     [Fact]
     public async Task Parse_SimpleEditorConfig_ParsesCorrectly()
     {
-        string tempFile = Path.GetTempFileName().Replace(".tmp", ".editorconfig");
-        try
-        {
-            File.WriteAllText(tempFile, """
-                root = true
-                
-                [*]
-                indent_style = space
-                
-                [*.cs]
-                indent_size = 4
-                """);
+        MockFileSystem fileSystem = new();
+        string editorConfigPath = "/repo/.editorconfig";
+        fileSystem.AddFile(editorConfigPath, new MockFileData("""
+            root = true
+            
+            [*]
+            indent_style = space
+            
+            [*.cs]
+            indent_size = 4
+            """));
 
-            var file = EditorConfigFile.Parse(tempFile);
+        var file = EditorConfigFile.Parse(editorConfigPath, fileSystem);
 
-            await Verifier.Verify(new
-            {
-                IsRoot = file.IsRoot,
-                SectionCount = file.Sections.Count,
-                FirstPattern = file.Sections[0].Pattern,
-                SecondPattern = file.Sections[1].Pattern
-            });
-        }
-        finally
+        await Verifier.Verify(new
         {
-            File.Delete(tempFile);
-        }
+            IsRoot = file.IsRoot,
+            SectionCount = file.Sections.Count,
+            FirstPattern = file.Sections[0].Pattern,
+            SecondPattern = file.Sections[1].Pattern
+        });
     }
 
     [Fact]
     public async Task Parse_WithComments_IgnoresComments()
     {
-        string tempFile = Path.GetTempFileName().Replace(".tmp", ".editorconfig");
-        try
-        {
-            File.WriteAllText(tempFile, """
-                # Comment
-                root = true
-                ; Semicolon comment
-                
-                [*]
-                indent_style = space
-                """);
+        MockFileSystem fileSystem = new();
+        string editorConfigPath = "/repo/.editorconfig";
+        fileSystem.AddFile(editorConfigPath, new MockFileData("""
+            # Comment
+            root = true
+            ; Semicolon comment
+            
+            [*]
+            indent_style = space
+            """));
 
-            var file = EditorConfigFile.Parse(tempFile);
+        var file = EditorConfigFile.Parse(editorConfigPath, fileSystem);
 
-            await Verifier.Verify(new
-            {
-                IsRoot = file.IsRoot,
-                SectionCount = file.Sections.Count,
-                PropertyCount = file.Sections[0].Properties.Count
-            });
-        }
-        finally
+        await Verifier.Verify(new
         {
-            File.Delete(tempFile);
-        }
+            IsRoot = file.IsRoot,
+            SectionCount = file.Sections.Count,
+            PropertyCount = file.Sections[0].Properties.Count
+        });
     }
 
     [Fact]
     public async Task Parse_WithDuplicateKeys_BothAreStored()
     {
-        string tempFile = Path.GetTempFileName().Replace(".tmp", ".editorconfig");
-        try
-        {
-            File.WriteAllText(tempFile, """
-                [*]
-                indent_style = tab
-                indent_style = space
-                """);
+        MockFileSystem fileSystem = new();
+        string editorConfigPath = "/repo/.editorconfig";
+        fileSystem.AddFile(editorConfigPath, new MockFileData("""
+            [*]
+            indent_style = tab
+            indent_style = space
+            """));
 
-            var file = EditorConfigFile.Parse(tempFile);
+        var file = EditorConfigFile.Parse(editorConfigPath, fileSystem);
 
-            await Verifier.Verify(new
-            {
-                SectionCount = file.Sections.Count,
-                PropertyCount = file.Sections[0].Properties.Count,
-                FirstPropertyValue = file.Sections[0].Properties[0].Value,
-                SecondPropertyValue = file.Sections[0].Properties[1].Value
-            });
-        }
-        finally
+        await Verifier.Verify(new
         {
-            File.Delete(tempFile);
-        }
+            SectionCount = file.Sections.Count,
+            PropertyCount = file.Sections[0].Properties.Count,
+            FirstPropertyValue = file.Sections[0].Properties[0].Value,
+            SecondPropertyValue = file.Sections[0].Properties[1].Value
+        });
     }
 
     [Fact]
     public async Task Parse_MultiplePatterns_ParsesAllSections()
     {
-        string tempFile = Path.GetTempFileName().Replace(".tmp", ".editorconfig");
-        try
-        {
-            File.WriteAllText(tempFile, """
-                [*]
-                prop = val1
-                
-                [*.cs]
-                prop = val2
-                
-                [*.{js,ts}]
-                prop = val3
-                """);
+        MockFileSystem fileSystem = new();
+        string editorConfigPath = "/repo/.editorconfig";
+        fileSystem.AddFile(editorConfigPath, new MockFileData("""
+            [*]
+            prop = val1
+            
+            [*.cs]
+            prop = val2
+            
+            [*.{js,ts}]
+            prop = val3
+            """));
 
-            var file = EditorConfigFile.Parse(tempFile);
+        var file = EditorConfigFile.Parse(editorConfigPath, fileSystem);
 
-            await Verifier.Verify(new
-            {
-                SectionCount = file.Sections.Count,
-                FirstPattern = file.Sections[0].Pattern,
-                SecondPattern = file.Sections[1].Pattern,
-                ThirdPattern = file.Sections[2].Pattern
-            });
-        }
-        finally
+        await Verifier.Verify(new
         {
-            File.Delete(tempFile);
-        }
+            SectionCount = file.Sections.Count,
+            FirstPattern = file.Sections[0].Pattern,
+            SecondPattern = file.Sections[1].Pattern,
+            ThirdPattern = file.Sections[2].Pattern
+        });
     }
 }
 
