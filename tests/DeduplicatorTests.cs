@@ -122,6 +122,39 @@ public class DeduplicatorTests
     }
 
     [Fact]
+    public async Task DeduplicateSingleFile_LaterBroaderSection_DoesNotRemoveEarlierSpecificSection()
+    {
+        MockFileSystem fileSystem = new();
+        string editorConfigPath = "/repo/.editorconfig";
+        fileSystem.AddFile(editorConfigPath, new MockFileData("""
+            [*.cs]
+            indent_size = 4
+            tab_width = 4
+
+            [*.{cs,ts}]
+            indent_size = 4
+            tab_width = 4
+            """));
+
+        var file = EditorConfigFile.Parse(editorConfigPath, fileSystem);
+        var deduplicator = new Deduplicator(fileSystem);
+
+        deduplicator.AnalyzeHierarchy(new List<EditorConfigFile> { file });
+
+        var earlierSection = file.Sections[0];
+        var laterSection = file.Sections[1];
+
+        await Verifier.Verify(new
+        {
+            EarlierIndentSizeRedundant = earlierSection.Properties[0].IsRedundant,
+            EarlierTabWidthRedundant = earlierSection.Properties[1].IsRedundant,
+            LaterIndentSizeRedundant = laterSection.Properties[0].IsRedundant,
+            LaterTabWidthRedundant = laterSection.Properties[1].IsRedundant,
+            TotalLinesRemoved = deduplicator.Summary.TotalLinesRemoved
+        });
+    }
+
+    [Fact]
     public void FindAllEditorConfigFiles_RecursiveSearch_FindsAllFiles()
     {
         MockFileSystem fileSystem = new();

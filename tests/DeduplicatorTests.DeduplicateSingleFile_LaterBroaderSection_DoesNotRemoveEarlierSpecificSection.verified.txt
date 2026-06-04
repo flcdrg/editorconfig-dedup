@@ -1,0 +1,6 @@
+﻿{
+  EarlierIndentSizeRedundant: false,
+  EarlierTabWidthRedundant: false,
+  LaterIndentSizeRedundant: false,
+  LaterTabWidthRedundant: false
+}

@@ -324,17 +324,14 @@ indent_size = 2
 
 # Xml config files
 [*.{props,targets,config,nuspec}]
-indent_size = 2
 
 [*.json]
-indent_size = 2
 
 # C# files
 [*.cs]
 
 #### Core EditorConfig Options ####
 
-max_line_length = 170
 
 # Indentation and spacing
 indent_size = 4
@@ -347,7 +344,6 @@ insert_final_newline = false
 [*.{cs,vb}]
 
 # Organize usings
-dotnet_separate_import_directive_groups = true
 dotnet_sort_system_directives_first = true
 
 # this. and Me. preferences
@@ -355,10 +351,7 @@ dotnet_sort_system_directives_first = true
 # Language keywords vs BCL types preferences
 
 # Parentheses preferences
-dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:none
-dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:none
 dotnet_style_parentheses_in_other_operators = never_if_unnecessary:silent
-dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:none
 
 # Modifier preferences
 
@@ -445,7 +438,6 @@ csharp_style_prefer_local_over_anonymous_function = true:suggestion
 csharp_style_prefer_null_check_over_type_check = true:suggestion
 csharp_style_prefer_range_operator = true:suggestion
 csharp_style_prefer_tuple_swap = true:suggestion
-csharp_style_prefer_utf8_string_literals = true:suggestion
 csharp_style_throw_expression = true:suggestion
 csharp_style_unused_value_assignment_preference = discard_variable:suggestion
 csharp_style_unused_value_expression_statement_preference = discard_variable:silent
@@ -692,11 +684,6 @@ dotnet_naming_style.s_camelcase.word_separator =
 dotnet_naming_style.s_camelcase.capitalization = camel_case
 
 # Microsoft .NET properties
-csharp_preferred_modifier_order = public, private, protected, internal, file, const, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, required, volatile, async:suggestion
-csharp_style_prefer_utf8_string_literals = true:suggestion
-csharp_style_var_elsewhere = false:none
-csharp_style_var_for_built_in_types = false:none
-csharp_style_var_when_type_is_apparent = false:none
 dotnet_naming_rule.enums_should_be_pascalcase.import_to_resharper = True
 dotnet_naming_rule.enums_should_be_pascalcase.resharper_description = enums_should_be_pascalcase
 dotnet_naming_rule.enums_should_be_pascalcase.resharper_guid = 0a460449-e42a-46f8-b663-8eb0a8aaeeda
@@ -724,46 +711,23 @@ dotnet_naming_rule.non_field_members_should_be_pascalcase.resharper_guid = a683b
 dotnet_naming_rule.parameters_should_be_camelcase.import_to_resharper = True
 dotnet_naming_rule.parameters_should_be_camelcase.resharper_description = parameters_should_be_camelcase
 dotnet_naming_rule.parameters_should_be_camelcase.resharper_guid = 3b37ec12-e252-42ec-8732-6a54126070fe
-dotnet_naming_rule.private_constants_rule.import_to_resharper = True
-dotnet_naming_rule.private_constants_rule.resharper_description = Constant fields (private)
-dotnet_naming_rule.private_constants_rule.resharper_guid = 236f7aa5-7b06-43ca-bf2a-9b31bfcff09a
-dotnet_naming_rule.private_constants_rule.severity = suggestion
 dotnet_naming_rule.private_constants_rule.style = pascalcase
-dotnet_naming_rule.private_constants_rule.symbols = private_constants_symbols
 dotnet_naming_rule.private_constant_fields_should_be_pascalcase.import_to_resharper = True
 dotnet_naming_rule.private_constant_fields_should_be_pascalcase.resharper_description = private_constant_fields_should_be_pascalcase
 dotnet_naming_rule.private_constant_fields_should_be_pascalcase.resharper_guid = 3ffe0066-8c94-4a2d-9998-7a414af62351
 dotnet_naming_rule.private_fields_should_be__camelcase.import_to_resharper = True
 dotnet_naming_rule.private_fields_should_be__camelcase.resharper_description = private_fields_should_be__camelcase
 dotnet_naming_rule.private_fields_should_be__camelcase.resharper_guid = 08c29fd1-33c7-4daa-81d0-fcc61f899d8c
-dotnet_naming_rule.private_instance_fields_override_rule.import_to_resharper = False
-dotnet_naming_rule.private_instance_fields_override_rule.severity = suggestion
 dotnet_naming_rule.private_instance_fields_override_rule.style = _camelcase
-dotnet_naming_rule.private_instance_fields_override_rule.symbols = private_instance_fields_override_symbols
-dotnet_naming_rule.private_instance_fields_rule.import_to_resharper = True
-dotnet_naming_rule.private_instance_fields_rule.resharper_description = Instance fields (private)
-dotnet_naming_rule.private_instance_fields_rule.resharper_guid = 4a98fdf6-7d98-4f5a-afeb-ea44ad98c70c
-dotnet_naming_rule.private_instance_fields_rule.severity = suggestion
 dotnet_naming_rule.private_instance_fields_rule.style = _camelcase
-dotnet_naming_rule.private_instance_fields_rule.symbols = private_instance_fields_symbols
-dotnet_naming_rule.private_static_fields_rule.import_to_resharper = True
-dotnet_naming_rule.private_static_fields_rule.resharper_description = Static fields (private)
-dotnet_naming_rule.private_static_fields_rule.resharper_guid = f9fce829-e6f4-4cb2-80f1-5497c44f51df
-dotnet_naming_rule.private_static_fields_rule.severity = suggestion
 dotnet_naming_rule.private_static_fields_rule.style = s_camelcase
-dotnet_naming_rule.private_static_fields_rule.symbols = private_static_fields_symbols
 dotnet_naming_rule.private_static_fields_should_be_s_camelcase.import_to_resharper = True
 dotnet_naming_rule.private_static_fields_should_be_s_camelcase.resharper_description = private_static_fields_should_be_s_camelcase
 dotnet_naming_rule.private_static_fields_should_be_s_camelcase.resharper_guid = d47916d5-7d91-4438-834f-46481ba3016f
 dotnet_naming_rule.private_static_readonly_fields_should_be_pascalcase.import_to_resharper = True
 dotnet_naming_rule.private_static_readonly_fields_should_be_pascalcase.resharper_description = private_static_readonly_fields_should_be_pascalcase
 dotnet_naming_rule.private_static_readonly_fields_should_be_pascalcase.resharper_guid = 5b2302ee-e66a-4b08-a1d5-ff0a370be532
-dotnet_naming_rule.private_static_readonly_rule.import_to_resharper = True
-dotnet_naming_rule.private_static_readonly_rule.resharper_description = Static readonly fields (private)
-dotnet_naming_rule.private_static_readonly_rule.resharper_guid = 15b5b1f1-457c-4ca6-b278-5615aedc07d3
-dotnet_naming_rule.private_static_readonly_rule.severity = suggestion
 dotnet_naming_rule.private_static_readonly_rule.style = pascalcase
-dotnet_naming_rule.private_static_readonly_rule.symbols = private_static_readonly_symbols
 dotnet_naming_rule.properties_should_be_pascalcase.import_to_resharper = True
 dotnet_naming_rule.properties_should_be_pascalcase.resharper_description = properties_should_be_pascalcase
 dotnet_naming_rule.properties_should_be_pascalcase.resharper_guid = 7fe721e6-e882-4619-973d-7a6b00032c27
@@ -782,57 +746,13 @@ dotnet_naming_rule.types_and_namespaces_should_be_pascalcase.resharper_guid = 4f
 dotnet_naming_rule.type_parameters_should_be_tpascalcase.import_to_resharper = True
 dotnet_naming_rule.type_parameters_should_be_tpascalcase.resharper_description = type_parameters_should_be_tpascalcase
 dotnet_naming_rule.type_parameters_should_be_tpascalcase.resharper_guid = 5739b1f0-1793-42a7-b272-4202d9de2f75
-dotnet_naming_symbols.private_constants_symbols.applicable_accessibilities = private
-dotnet_naming_symbols.private_constants_symbols.applicable_kinds = field
-dotnet_naming_symbols.private_constants_symbols.required_modifiers = const
-dotnet_naming_symbols.private_constants_symbols.resharper_applicable_kinds = constant_field
-dotnet_naming_symbols.private_constants_symbols.resharper_required_modifiers = any
-dotnet_naming_symbols.private_instance_fields_override_symbols.applicable_accessibilities = private
-dotnet_naming_symbols.private_instance_fields_override_symbols.applicable_kinds = field
-dotnet_naming_symbols.private_instance_fields_override_symbols.required_modifiers = static
-dotnet_naming_symbols.private_instance_fields_symbols.applicable_accessibilities = private
-dotnet_naming_symbols.private_instance_fields_symbols.applicable_kinds = field
-dotnet_naming_symbols.private_instance_fields_symbols.resharper_applicable_kinds = field,readonly_field
-dotnet_naming_symbols.private_instance_fields_symbols.resharper_required_modifiers = instance
-dotnet_naming_symbols.private_static_fields_symbols.applicable_accessibilities = private
-dotnet_naming_symbols.private_static_fields_symbols.applicable_kinds = field
-dotnet_naming_symbols.private_static_fields_symbols.required_modifiers = static
-dotnet_naming_symbols.private_static_fields_symbols.resharper_applicable_kinds = field
-dotnet_naming_symbols.private_static_fields_symbols.resharper_required_modifiers = static
-dotnet_naming_symbols.private_static_readonly_symbols.applicable_accessibilities = private
-dotnet_naming_symbols.private_static_readonly_symbols.applicable_kinds = field
-dotnet_naming_symbols.private_static_readonly_symbols.required_modifiers = readonly,static
-dotnet_naming_symbols.private_static_readonly_symbols.resharper_applicable_kinds = readonly_field
-dotnet_naming_symbols.private_static_readonly_symbols.resharper_required_modifiers = static
 
 # ReSharper properties
-resharper_braces_for_for = required
-resharper_braces_for_foreach = required
 resharper_braces_for_ifelse = required
-resharper_braces_for_while = required
-resharper_braces_redundant = false
-resharper_case_block_braces = next_line_shifted_2
-resharper_csharp_wrap_parameters_style = chop_if_long
-resharper_keep_existing_declaration_block_arrangement = true
-resharper_keep_existing_embedded_block_arrangement = true
-resharper_keep_existing_enum_arrangement = true
 resharper_keep_existing_initializer_arrangement = false
-resharper_show_autodetect_configure_formatting_tip = false
-resharper_use_heuristics_for_body_style = false
-resharper_use_indent_from_vs = false
 
 # ReSharper inspection severities
-resharper_arrange_accessor_owner_body_highlighting = none
-resharper_arrange_namespace_body_highlighting = suggestion
-resharper_arrange_this_qualifier_highlighting = none
-resharper_arrange_type_member_modifiers_highlighting = none
-resharper_arrange_type_modifiers_highlighting = none
-resharper_built_in_type_reference_style_for_member_access_highlighting = none
-resharper_built_in_type_reference_style_highlighting = none
-resharper_inconsistent_naming_highlighting = suggestion
-resharper_redundant_base_qualifier_highlighting = none
 
 [*.{appxmanifest,asax,ascx,aspx,axaml,axml,config,cql,cs,cshtml,csproj,dbml,discomap,dtd,htm,html,jsproj,lsproj,master,njsproj,nuspec,paml,proj,props,razor,resw,resx,skin,sql,StyleCop,targets,tasks,vb,vbproj,xaml,xamlx,xml,xoml,xsd}]
-indent_style = space
 indent_size = 4
 tab_width = 4
