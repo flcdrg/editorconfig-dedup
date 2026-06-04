@@ -114,15 +114,13 @@ public class Deduplicator
 
         for (int i = 0; i < sections.Count; i++)
         {
-            for (int j = 0; j < sections.Count; j++)
+            for (int j = 0; j < i; j++)
             {
-                if (i == j)
-                    continue;
+                EditorConfigSection broaderSection = sections[j];
+                EditorConfigSection narrowerSection = sections[i];
 
-                EditorConfigSection broaderSection = sections[i];
-                EditorConfigSection narrowerSection = sections[j];
-
-                if (!PatternMatcher.IsScopeBroader(broaderSection.Pattern, narrowerSection.Pattern))
+                if (!PatternMatcher.IsScopeBroader(broaderSection.Pattern, narrowerSection.Pattern) &&
+                    broaderSection.Pattern != narrowerSection.Pattern)
                     continue;
 
                 foreach (var narrowerProp in narrowerSection.Properties)
