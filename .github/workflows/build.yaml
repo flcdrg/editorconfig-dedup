@@ -36,7 +36,7 @@ jobs:
       GitBuildVersionSimple: ${{ steps.version.outputs.GitBuildVersionSimple }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
           fetch-depth: 0
@@ -93,7 +93,7 @@ jobs:
 
     if: github.ref == 'refs/heads/main' # Running this job only for main branch
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: release-drafter/release-drafter@v7
         id: create_release
